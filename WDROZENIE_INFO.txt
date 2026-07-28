@@ -1,0 +1,21 @@
+﻿GYMPROGRES WEB - BUILD PRODUKCYJNY V1.1
+
+Data utworzenia: 2026-07-29 00:15:50
+Projekt: C:\projekty\gymprogres_web
+Wersja Flutter: 0.16.6+28
+Domena docelowa: https://app.gymprogres.pl
+Base href: /
+Tryb: release
+
+Kontrola jakosci:
+- flutter analyze --no-fatal-infos
+- informacje stylistyczne nie blokuja buildu
+- bledy i ostrzezenia nadal blokuja build
+
+Pliki wdrozeniowe:
+- index.html
+- 404.html
+- CNAME
+- .nojekyll
+- flutter_bootstrap.js
+- pozostale pliki wygenerowane przez Flutter Web
