@@ -1,5 +1,6 @@
-GymProgres Web V33.2E
-Build: 2026-08-01_10-40-04
+GymProgres Web V33.3
+Build: 2026-08-01_11-41-21
+Feature: Wymagaja uwagi
 Desktop sidebar breakpoint: 900 px
 Side rail breakpoint: 640 px
 API: https://api.gymprogres.pl
