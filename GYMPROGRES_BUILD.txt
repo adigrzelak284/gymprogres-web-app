@@ -1,6 +1,7 @@
-GymProgres Web V33.4.4B
-Feature: current trainer-trainee messages
+GymProgres Web V33.4.5
+Feature: Firebase Web token registration fixed
+Feature: explicit notification permission action
 Firebase Web: enabled
 API required: 33.4.0
-Build ID: 20260802213807
-Build date: 2026-08-02 21:38:07
+Build ID: 20260802221542
+Build date: 2026-08-02 22:15:42
