@@ -1,7 +1,4 @@
-GymProgres Web V33.4.5A
-Feature: Firebase Web waits for active service worker
-Feature: Firebase token retry and API registration
-Firebase Web: enabled
-API required: 33.4.0
-Build ID: 20260802223730
-Build date: 2026-08-02 22:37:30
+GYMPROGRES WEB V33.4.5B
+Data wdrozenia: 2026-08-02 23:08:18
+Zmiana: logo GymProgres w powiadomieniach webowych
+Source icon: C:\projekty\GYMPROGRES_V33_0_TEST_2026-07-30_23-43-05\FLUTTER_MOBILE\android\app\src\main\res\mipmap-xxxhdpi\ic_launcher.png
