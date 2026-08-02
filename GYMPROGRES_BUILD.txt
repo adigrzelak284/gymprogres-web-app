@@ -1,7 +1,7 @@
-GymProgres Web V33.4.5
-Feature: Firebase Web token registration fixed
-Feature: explicit notification permission action
+GymProgres Web V33.4.5A
+Feature: Firebase Web waits for active service worker
+Feature: Firebase token retry and API registration
 Firebase Web: enabled
 API required: 33.4.0
-Build ID: 20260802221542
-Build date: 2026-08-02 22:15:42
+Build ID: 20260802223730
+Build date: 2026-08-02 22:37:30
