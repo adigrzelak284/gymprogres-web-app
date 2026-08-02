@@ -1,5 +1,6 @@
-GymProgres Web V33.4
-Feature: trainer-trainee messages
+GymProgres Web V33.4.4B
+Feature: current trainer-trainee messages
+Firebase Web: enabled
 API required: 33.4.0
-Firebase Web push: True
-Build: 2026-08-02 12:31:53
+Build ID: 20260802213807
+Build date: 2026-08-02 21:38:07
