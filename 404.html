@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <!--
@@ -29,21 +29,30 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png?v=2"/>
 
-  <title>GymProgres â€” panel treningowy</title>
+  <title>GymProgres — panel treningowy</title>
   <link rel="manifest" href="manifest.json">
   <style data-gymprogres-web-theme>html,body{background:#050914;margin:0}</style>
-  <meta name="gymprogres-build" content="V33.3-2026-08-01_11-41-21">
 </head>
 <body>
   <!--
-    You can customize the "flutter_bootstrap.js?v=333-2026-08-01_11-41-21" script.
+    You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
     or to give the user feedback during the initialization process.
 
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
-  <script src="flutter_bootstrap.js?v=333-2026-08-01_11-41-21" async></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('firebase-messaging-sw.js', {
+          scope: '/firebase-cloud-messaging-push-scope',
+        }).catch(function (error) {
+          console.warn('Firebase Messaging service worker registration failed.', error);
+        });
+      });
+    }
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
-
