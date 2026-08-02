@@ -1,4 +1,5 @@
-GYMPROGRES WEB V33.4.5B
-Data wdrozenia: 2026-08-02 23:08:18
-Zmiana: logo GymProgres w powiadomieniach webowych
-Source icon: C:\projekty\GYMPROGRES_V33_0_TEST_2026-07-30_23-43-05\FLUTTER_MOBILE\android\app\src\main\res\mipmap-xxxhdpi\ic_launcher.png
+GYMPROGRES WEB V33.4.5B4
+Data wdrozenia: 2026-08-02 23:18:56
+Przywrocono pelna zawartosc build web
+Logo GymProgres w powiadomieniach: TAK
+CNAME: app.gymprogres.pl
