@@ -1,5 +1,4 @@
-GYMPROGRES WEB V33.4.5B4
-Data wdrozenia: 2026-08-02 23:18:56
-Przywrocono pelna zawartosc build web
-Logo GymProgres w powiadomieniach: TAK
-CNAME: app.gymprogres.pl
+GYMPROGRES WEB V33.5D
+Data wdrozenia: 2026-08-03 20:34:56
+API: 33.5.1
+Zakres: zdjecia postepu, raporty, wykresy i szkic treningu
