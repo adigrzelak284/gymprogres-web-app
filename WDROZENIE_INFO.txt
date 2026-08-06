@@ -6,3 +6,8 @@ API: 33.8.0
 Rejestracja Web: zablokowana
 Zakup subskrypcji Web: zablokowany
 Zakupy: tylko Android i iOS
+
+Hotfix push: TAK
+Marker hotfixu: GYMPROGRES_WEB_V33_8A_PUSH_HOTFIX_2026-08-06_23-47-00
+Firebase service worker: przywrocony
+Skrypt uprawnien push: przywrocony

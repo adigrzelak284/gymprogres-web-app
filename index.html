@@ -42,6 +42,17 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
-  <script src="flutter_bootstrap.js" async></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('firebase-messaging-sw.js', {
+        scope: '/firebase-cloud-messaging-push-scope',
+      }).catch(function (error) {
+        console.warn('Firebase Messaging service worker registration failed.', error);
+      });
+    });
+  }
+  </script>
+  <script src="gymprogres-push-permission.js"></script>  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
