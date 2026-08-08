@@ -35,7 +35,7 @@
     title.style.marginBottom = '6px';
 
     var description = document.createElement('div');
-    description.textContent = 'W┼é─ůcz powiadomienia, aby otrzymywa─ç nowe wiadomo┼Ťci tak┼╝e wtedy, gdy karta jest w tle.';
+    description.textContent = 'Włącz powiadomienia, aby otrzymywać nowe wiadomości także wtedy, gdy karta jest w tle.';
     description.style.fontSize = '13px';
     description.style.lineHeight = '1.4';
     description.style.opacity = '0.86';
@@ -48,7 +48,7 @@
 
     var later = document.createElement('button');
     later.type = 'button';
-    later.textContent = 'P├│┼║niej';
+    later.textContent = 'Później';
     later.style.padding = '8px 12px';
     later.style.borderRadius = '9px';
     later.style.border = '1px solid rgba(255, 255, 255, 0.18)';
@@ -59,7 +59,7 @@
 
     var enable = document.createElement('button');
     enable.type = 'button';
-    enable.textContent = 'W┼é─ůcz powiadomienia';
+    enable.textContent = 'Włącz powiadomienia';
     enable.style.padding = '8px 12px';
     enable.style.borderRadius = '9px';
     enable.style.border = '0';
