@@ -72,9 +72,7 @@
       try {
         var permission = await Notification.requestPermission();
         removeBox();
-        if (permission === 'granted') {
-          window.location.reload();
-        }
+        if (permission === 'granted') window.location.reload();
       } catch (error) {
         console.warn('[GYMPROGRES_PUSH] permission request failed', error);
         enable.disabled = false;
