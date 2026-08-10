@@ -24,24 +24,19 @@ messaging.onBackgroundMessage(function(payload) {
   const notification = payload && payload.notification ? payload.notification : {};
   const data = payload && payload.data ? payload.data : {};
   const title = notification.title || data.title || 'GymProgres';
-  const body = notification.body || data.body || 'Nowa wiadomosc';
+  const body = notification.body || data.body || 'Nowa wiadomość';
   const icon = '/icons/Icon-192.png';
   const badge = '/icons/Icon-192.png';
   const clickAction = data.click_action || data.clickAction || '/';
 
-  const options = {
+  return self.registration.showNotification(title, {
     body: body,
     icon: icon,
     badge: badge,
-    data: {
-      click_action: clickAction,
-      url: clickAction
-    },
+    data: { click_action: clickAction, url: clickAction },
     requireInteraction: false,
     tag: data.tag || 'gymprogres-message'
-  };
-
-  return self.registration.showNotification(title, options);
+  });
 });
 
 self.addEventListener('notificationclick', function(event) {
@@ -56,9 +51,7 @@ self.addEventListener('notificationclick', function(event) {
           return client.focus();
         }
       }
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
-      }
+      if (clients.openWindow) return clients.openWindow(targetUrl);
     })
   );
 });
