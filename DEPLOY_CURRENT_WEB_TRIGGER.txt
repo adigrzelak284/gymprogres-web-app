@@ -1,0 +1,1 @@
+Deploy validated Web API runtime fix for Start / Plany / Historia / Panel — 2026-08-10 23:36 Europe/Warsaw.
