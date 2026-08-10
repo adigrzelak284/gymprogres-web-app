@@ -34,7 +34,7 @@ jobs:
           grep -q 'Trener Pro+' /tmp/gymprogres-web/main.dart.js
           grep -q 'Trener Studio' /tmp/gymprogres-web/main.dart.js
           grep -q 'Panel administratora' /tmp/gymprogres-web/main.dart.js
-          grep -q 'Nie udało się przywrócić sesji' /tmp/gymprogres-web/main.dart.js
+          grep -q 'Session restore timed out on Web' /tmp/gymprogres-web/main.dart.js
 
       - name: Overlay new app files and preserve Pages configuration
         run: |
