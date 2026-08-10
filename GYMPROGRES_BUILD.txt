@@ -2,3 +2,5 @@ GYMPROGRES WEB V33.5E2
 Data wdrozenia: 2026-08-04 14:53:59
 API minimum: 33.5.1
 Zakres: trener widzi raport postepu i rekordy podopiecznego w Aktywnosciach
+
+RESTORE 2026-08-10: przywrócono ostatnią stabilną wersję po błędnym wdrożeniu Web.
