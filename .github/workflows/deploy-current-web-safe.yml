@@ -24,7 +24,7 @@ jobs:
       - name: Download validated current Web artifact
         run: |
           curl --fail --location --retry 3 \
-            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-d9a8-81f4-826f-e03a43bffa4d/raw?se=2026-08-10T20%3A52%3A44Z&sp=r&sv=2026-02-06&sr=b&scid=4b2ca5f7-9e3a-5249-9863-30b2f193b5df&skoid=9b41a688-1b44-4731-856e-b0efcf3660ed&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-10T06%3A07%3A47Z&ske=2026-08-11T06%3A07%3A47Z&sks=b&skv=2026-02-06&sig=JCwNJr1AQY7SYejO%2Bj9T1Nj019c12sTJMicnVA3RIaw%3D' \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-c4cc-81f4-bf9d-c34c4a073579/raw?se=2026-08-10T21%3A05%3A27Z&sp=r&sv=2026-02-06&sr=b&scid=cd0fd4a7-5482-5b00-a218-38887814908d&skoid=9b41a688-1b44-4731-856e-b0efcf3660ed&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-10T05%3A05%3A43Z&ske=2026-08-11T05%3A05%3A43Z&sks=b&skv=2026-02-06&sig=oglpyJH2c4f/8bQgmCwSHxv0bsAGu9QLQsNgVQzoens%3D' \
             --output /tmp/gymprogres-web.zip
           rm -rf /tmp/gymprogres-web
           mkdir -p /tmp/gymprogres-web
@@ -34,6 +34,7 @@ jobs:
           grep -q 'Trener Pro+' /tmp/gymprogres-web/main.dart.js
           grep -q 'Trener Studio' /tmp/gymprogres-web/main.dart.js
           grep -q 'Panel administratora' /tmp/gymprogres-web/main.dart.js
+          grep -q 'Nie udało się przywrócić sesji' /tmp/gymprogres-web/main.dart.js
 
       - name: Overlay new app files and preserve Pages configuration
         run: |
@@ -55,5 +56,5 @@ jobs:
             echo 'No changes to deploy.'
             exit 0
           fi
-          git commit -m 'Web: current prices and admin, registration stays disabled'
+          git commit -m 'Web: fix session restore hang and keep current features'
           git push origin HEAD:main
