@@ -1,0 +1,59 @@
+name: Deploy current GymProgres Web safely
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'DEPLOY_CURRENT_WEB_TRIGGER.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout stable production branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download validated current Web artifact
+        run: |
+          curl --fail --location --retry 3 \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-d9a8-81f4-826f-e03a43bffa4d/raw?se=2026-08-10T20%3A52%3A44Z&sp=r&sv=2026-02-06&sr=b&scid=4b2ca5f7-9e3a-5249-9863-30b2f193b5df&skoid=9b41a688-1b44-4731-856e-b0efcf3660ed&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-10T06%3A07%3A47Z&ske=2026-08-11T06%3A07%3A47Z&sks=b&skv=2026-02-06&sig=JCwNJr1AQY7SYejO%2Bj9T1Nj019c12sTJMicnVA3RIaw%3D' \
+            --output /tmp/gymprogres-web.zip
+          rm -rf /tmp/gymprogres-web
+          mkdir -p /tmp/gymprogres-web
+          unzip -q /tmp/gymprogres-web.zip -d /tmp/gymprogres-web
+          test -s /tmp/gymprogres-web/index.html
+          test -s /tmp/gymprogres-web/main.dart.js
+          grep -q 'Trener Pro+' /tmp/gymprogres-web/main.dart.js
+          grep -q 'Trener Studio' /tmp/gymprogres-web/main.dart.js
+          grep -q 'Panel administratora' /tmp/gymprogres-web/main.dart.js
+
+      - name: Overlay new app files and preserve Pages configuration
+        run: |
+          cp -a /tmp/gymprogres-web/. .
+          rm -f WEB_REPAIR_VALIDATION.txt DEPLOY_CURRENT_WEB_TRIGGER.txt
+          printf '%s\n' 'app.gymprogres.pl' > CNAME
+          touch .nojekyll
+          test -s index.html
+          test -s main.dart.js
+          test -d .github
+          test "$(cat CNAME)" = 'app.gymprogres.pl'
+
+      - name: Commit current Web features
+        run: |
+          git config user.name 'GymProgres CI'
+          git config user.email 'dzienniktreningowy.app@gmail.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to deploy.'
+            exit 0
+          fi
+          git commit -m 'Web: current prices and admin, registration stays disabled'
+          git push origin HEAD:main
