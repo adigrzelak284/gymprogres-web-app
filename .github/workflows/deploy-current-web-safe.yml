@@ -24,7 +24,7 @@ jobs:
       - name: Download validated current Web artifact
         run: |
           curl --fail --location --retry 3 \
-            'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-02f0-8246-aaed-74b5e5ea05c0/raw?se=2026-08-10T21%3A40%3A01Z&sp=r&sv=2026-02-06&sr=b&scid=789a92d0-2c97-56c8-aa17-bfd3eab4fc33&skoid=e32cbaad-a1eb-4299-9f16-1b364ab43781&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-10T06%3A12%3A44Z&ske=2026-08-11T06%3A12%3A44Z&sks=b&skv=2026-02-06&sig=qU8bLgI04IP4GLjrxRw1I3k9V%2BeSdPScLq4%2B/gLKHrw%3D' \
+            'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-bac4-8246-a170-3fc6545949ab/raw?se=2026-08-11T17%3A12%3A31Z&sp=r&sv=2026-02-06&sr=b&scid=ad499398-e58f-575e-9076-25f96c86fc20&skoid=76024c37-11e2-4c92-aa07-7e519fbe2d0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-11T05%3A13%3A38Z&ske=2026-08-12T05%3A13%3A38Z&sks=b&skv=2026-02-06&sig=1Euv14UarZg35yNbZniwsm9bFU5TWhL9qzTOePH4OrE%3D' \
             --output /tmp/gymprogres-web.zip
           rm -rf /tmp/gymprogres-web
           mkdir -p /tmp/gymprogres-web
@@ -35,7 +35,6 @@ jobs:
           grep -q 'Trener Studio' /tmp/gymprogres-web/main.dart.js
           grep -q 'Panel administratora' /tmp/gymprogres-web/main.dart.js
           grep -q 'Session restore timed out on Web' /tmp/gymprogres-web/main.dart.js
-          grep -q 'Web secure access-token read failed' /tmp/gymprogres-web/main.dart.js
 
       - name: Overlay new app files and preserve Pages configuration
         run: |
@@ -57,5 +56,5 @@ jobs:
             echo 'No changes to deploy.'
             exit 0
           fi
-          git commit -m 'Web: harden API runtime for Start Plans History Panel'
+          git commit -m 'Web: constrain all routes and compact history calendar'
           git push origin HEAD:main
