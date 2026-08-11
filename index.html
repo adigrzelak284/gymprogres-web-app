@@ -5,6 +5,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="GymProgres — panel treningowy, plany, historia, wiadomości i progres.">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -13,7 +14,10 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>GymProgres — panel treningowy</title>
   <link rel="manifest" href="manifest.json">
-  <style data-gymprogres-web-theme>html,body{background:#050914;margin:0}</style>
+  <style data-gymprogres-web-theme>
+    html,body{background:#050914;margin:0;min-height:100%;}
+    body{min-width:320px;}
+  </style>
 </head>
 <body>
   <script>

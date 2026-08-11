@@ -1,4 +1,4 @@
 GYMPROGRES WEB CURRENT SOURCE
-Commit: ae51f1cfe35b9be95aaccc24a2c0f429e49a8ba0
-Built: 2026-08-10T21:33:08Z
+Commit: f716014ba2e4cc4bc6db682799c6eda4e289b743
+Built: 2026-08-11T09:59:41Z
 Scope: current Android/iOS feature set, Web login-only safeguards
