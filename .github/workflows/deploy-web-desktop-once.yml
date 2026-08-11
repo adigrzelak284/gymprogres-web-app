@@ -1,0 +1,55 @@
+name: Deploy validated GymProgres desktop Web
+
+on:
+  push:
+    branches:
+      - deploy-web-desktop-20260811
+    paths:
+      - '.github/workflows/deploy-web-desktop-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout production Web
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download validated Web artifact
+        run: |
+          curl --fail --location --retry 3 \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-0a40-81f4-a412-d3a524820672/raw?se=2026-08-11T10%3A06%3A04Z&sp=r&sv=2026-02-06&sr=b&scid=251f3c74-5c4f-5b50-8173-a7dbedc5f6a6&skoid=b971d227-1348-4524-8797-edb0fdf15147&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-11T06%3A42%3A34Z&ske=2026-08-12T06%3A42%3A34Z&sks=b&skv=2026-02-06&sig=fpair6dmXliyJfl6Gotp3GBwfn0DLu6CdVDZYp35/ew%3D' \
+            --output /tmp/gymprogres-web.zip
+          rm -rf /tmp/gymprogres-web
+          mkdir -p /tmp/gymprogres-web
+          unzip -q /tmp/gymprogres-web.zip -d /tmp/gymprogres-web
+          test -s /tmp/gymprogres-web/main.dart.js
+          test -s /tmp/gymprogres-web/index.html
+          test -s /tmp/gymprogres-web/flutter_bootstrap.js
+
+      - name: Overlay validated package without removing Pages configuration
+        run: |
+          cp -a /tmp/gymprogres-web/. .
+          printf '%s\n' 'app.gymprogres.pl' > CNAME
+          touch .nojekyll
+          test -s main.dart.js
+          test -s index.html
+          test "$(cat CNAME)" = "app.gymprogres.pl"
+
+      - name: Commit production Web deployment
+        run: |
+          git config user.name 'GymProgres CI'
+          git config user.email 'dzienniktreningowy.app@gmail.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No Web changes to deploy.'
+            exit 0
+          fi
+          git commit -m 'Web: desktop dashboard layout and responsive feature grid'
+          git push origin HEAD:main
