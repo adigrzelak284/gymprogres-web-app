@@ -1,0 +1,1 @@
+Deploy Web artifact from GymProgres audited release 0.24.5 source e22042003af6c6a386548ee41ad6aa59060de71c.
