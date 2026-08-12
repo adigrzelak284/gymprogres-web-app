@@ -1,0 +1,2 @@
+Deploy validated GymProgres Web artifact built from gymprogres-mobile-app commit b866a1b041a0b609dbf36bacb9dd824774e4cfeb.
+Scope: V34 Performance + current subscription prices, with existing Web-only safeguards preserved.
