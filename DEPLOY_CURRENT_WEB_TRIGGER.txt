@@ -1,0 +1,1 @@
+Deploy the validated Web artifact built from gymprogres-mobile-app commit 36a2b3474dd776dc20522e2512cd2b5e2a654dd8.
