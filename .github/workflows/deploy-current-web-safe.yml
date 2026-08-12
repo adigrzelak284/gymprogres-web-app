@@ -24,18 +24,24 @@ jobs:
       - name: Download validated current Web artifact
         run: |
           curl --fail --location --retry 3 \
-            'https://sdmntpritalynorth.oaiusercontent.com/files/00000000-283c-8246-badd-bf4af31f455b/raw?se=2026-08-11T19%3A22%3A52Z&sp=r&sv=2026-02-06&sr=b&scid=d9083340-9cbe-5eed-9f3e-99ca2199ff16&skoid=a0b9f82a-c86e-4064-a822-2aa38890bb37&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-11T06%3A27%3A15Z&ske=2026-08-12T06%3A27%3A15Z&sks=b&skv=2026-02-06&sig=bGnD58XAklK0p8NfujVPAt983tzt7ru0gSB8INLhkn8%3D' \
+            'https://sdmntprcacentral.oaiusercontent.com/files/00000000-28b8-820d-9771-1e165961424d/raw?se=2026-08-12T16%3A02%3A47Z&sp=r&sv=2026-02-06&sr=b&scid=f6efff54-3d63-569b-ada8-7938b0bd5006&skoid=a3a8eefe-d4bd-4909-ab1d-2a75a2302fac&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-12T07%3A23%3A18Z&ske=2026-08-13T07%3A23%3A18Z&sks=b&skv=2026-02-06&sig=yYZcAq7C8SyIYLvf0aKpwYzvX4KYKWgfe4JoBYNJiwM%3D' \
             --output /tmp/gymprogres-web.zip
           rm -rf /tmp/gymprogres-web
           mkdir -p /tmp/gymprogres-web
           unzip -q /tmp/gymprogres-web.zip -d /tmp/gymprogres-web
           test -s /tmp/gymprogres-web/index.html
           test -s /tmp/gymprogres-web/main.dart.js
+          grep -q 'Commit: b866a1b041a0b609dbf36bacb9dd824774e4cfeb' /tmp/gymprogres-web/GYMPROGRES_BUILD.txt
           grep -q 'Trener Pro+' /tmp/gymprogres-web/main.dart.js
           grep -q 'Trener Studio' /tmp/gymprogres-web/main.dart.js
           grep -q 'Panel administratora' /tmp/gymprogres-web/main.dart.js
           grep -q 'Session restore timed out on Web' /tmp/gymprogres-web/main.dart.js
           grep -q 'exercise-last/bulk' /tmp/gymprogres-web/main.dart.js
+          grep -q '5.99' /tmp/gymprogres-web/main.dart.js
+          grep -q '25.99' /tmp/gymprogres-web/main.dart.js
+          grep -q '49.99' /tmp/gymprogres-web/main.dart.js
+          grep -q '89.99' /tmp/gymprogres-web/main.dart.js
+          grep -q '119.99' /tmp/gymprogres-web/main.dart.js
 
       - name: Overlay new app files and preserve Pages configuration
         run: |
@@ -57,5 +63,5 @@ jobs:
             echo 'No changes to deploy.'
             exit 0
           fi
-          git commit -m 'Web: V34 Performance phase 1'
+          git commit -m 'Web: sync current V34 build and prices'
           git push origin HEAD:main
