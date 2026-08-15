@@ -9,11 +9,12 @@
     );
   }
 
-  // Flutter Web + Dio uses XMLHttpRequest in the current production build.
-  // ApiClient has a global "Content-Type: application/json" header and the
-  // Excel upload also used to force "multipart/form-data" manually. Either
-  // value is wrong for a browser FormData upload because the browser itself
-  // must create: multipart/form-data; boundary=...
+  // The current Flutter Web build uses Dio's XMLHttpRequest adapter. Dio does
+  // NOT send a native browser FormData object here: it serializes FormData to
+  // bytes and then sets the final multipart header itself, including boundary.
+  // Therefore we must preserve:
+  //   multipart/form-data; boundary=...
+  // and suppress only stale/invalid Content-Type values for Excel uploads.
   if (typeof XMLHttpRequest !== 'undefined') {
     const originalOpen = XMLHttpRequest.prototype.open;
     const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
@@ -29,16 +30,28 @@
         typeof name === 'string' &&
         name.toLowerCase() === 'content-type'
       ) {
-        // Do not send application/json or a boundary-less multipart header.
-        // XMLHttpRequest will generate the correct multipart header from
-        // FormData when send(FormData) is called.
-        return;
+        const normalized = String(value || '').trim().toLowerCase();
+        const hasMultipartBoundary =
+          normalized.startsWith('multipart/form-data;') &&
+          normalized.includes('boundary=');
+
+        if (hasMultipartBoundary) {
+          return originalSetRequestHeader.call(this, name, value);
+        }
+
+        if (
+          normalized === 'multipart/form-data' ||
+          normalized.startsWith('application/json')
+        ) {
+          return;
+        }
       }
       return originalSetRequestHeader.call(this, name, value);
     };
   }
 
-  // Future-proof the same fix for a possible fetch-based Dio adapter.
+  // If a future adapter sends a native FormData with fetch(), let the browser
+  // create its own boundary. This branch does not affect today's Dio XHR build.
   if (typeof window.fetch === 'function') {
     const originalFetch = window.fetch.bind(window);
     window.fetch = function (input, init) {
