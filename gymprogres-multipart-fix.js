@@ -9,12 +9,12 @@
     );
   }
 
-  // The current Flutter Web build uses Dio's XMLHttpRequest adapter. Dio does
-  // NOT send a native browser FormData object here: it serializes FormData to
-  // bytes and then sets the final multipart header itself, including boundary.
-  // Therefore we must preserve:
-  //   multipart/form-data; boundary=...
-  // and suppress only stale/invalid Content-Type values for Excel uploads.
+  // Current Flutter Web + Dio serializes FormData to multipart bytes before
+  // XMLHttpRequest sends the request. Chrome is more reliable for this build
+  // when Content-Type is not manually attached to the cross-origin request.
+  // API 33.8.8 recovers the multipart boundary directly from the serialized
+  // body for the two Excel endpoints, so suppress every Content-Type value
+  // here while preserving Authorization and GymProgres headers.
   if (typeof XMLHttpRequest !== 'undefined') {
     const originalOpen = XMLHttpRequest.prototype.open;
     const originalSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
@@ -30,28 +30,14 @@
         typeof name === 'string' &&
         name.toLowerCase() === 'content-type'
       ) {
-        const normalized = String(value || '').trim().toLowerCase();
-        const hasMultipartBoundary =
-          normalized.startsWith('multipart/form-data;') &&
-          normalized.includes('boundary=');
-
-        if (hasMultipartBoundary) {
-          return originalSetRequestHeader.call(this, name, value);
-        }
-
-        if (
-          normalized === 'multipart/form-data' ||
-          normalized.startsWith('application/json')
-        ) {
-          return;
-        }
+        return;
       }
       return originalSetRequestHeader.call(this, name, value);
     };
   }
 
-  // If a future adapter sends a native FormData with fetch(), let the browser
-  // create its own boundary. This branch does not affect today's Dio XHR build.
+  // Future fetch-based adapter: native FormData also needs Content-Type left to
+  // the browser. This branch does not affect the current Dio XHR build.
   if (typeof window.fetch === 'function') {
     const originalFetch = window.fetch.bind(window);
     window.fetch = function (input, init) {
