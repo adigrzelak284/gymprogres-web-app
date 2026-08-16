@@ -12,15 +12,13 @@
   const logoutButton = $('logoutButton');
   const usersBox = $('users');
 
-  const plans = {
-    personal: [{ code: 'personal', label: 'Personal Pro' }],
-    trainer: [
-      { code: 'trainer_start', label: 'Trener Start — limit 5' },
-      { code: 'trainer_pro', label: 'Trener Pro — limit 15' },
-      { code: 'trainer_pro_plus', label: 'Trener Pro+ — limit 30' },
-      { code: 'trainer_studio', label: 'Trener Studio — limit 50' }
-    ]
-  };
+  const plans = [
+    { code: 'personal', label: 'Personal Pro' },
+    { code: 'trainer_start', label: 'Trener Start — limit 5' },
+    { code: 'trainer_pro', label: 'Trener Pro — limit 15' },
+    { code: 'trainer_pro_plus', label: 'Trener Pro+ — limit 30' },
+    { code: 'trainer_studio', label: 'Trener Studio — limit 50' }
+  ];
 
   function message(target, text, kind = 'error') {
     target.textContent = '';
@@ -42,27 +40,29 @@
   }
 
   function normalizePromotionResponse(result) {
-    if (!result) return { promotion: null, storeSubscriptionPreserved: false };
+    if (!result) return { promotion: null, storeSubscriptionPreserved: false, effectiveNow: false };
     if (result.promotion) {
       return {
         promotion: result.promotion,
-        storeSubscriptionPreserved: result.store_subscription_preserved === true
+        storeSubscriptionPreserved: result.store_subscription_preserved === true,
+        effectiveNow: result.effective_now !== false
       };
     }
     if (result.plan_code && result.active === true) {
       return {
         promotion: result,
-        storeSubscriptionPreserved: result.store_subscription_preserved === true
+        storeSubscriptionPreserved: result.store_subscription_preserved === true,
+        effectiveNow: result.effective_now !== false
       };
     }
-    return { promotion: null, storeSubscriptionPreserved: false };
+    return { promotion: null, storeSubscriptionPreserved: false, effectiveNow: false };
   }
 
   async function request(path, options = {}) {
     const headers = {
       'Content-Type': 'application/json',
       'X-GymProgres-Platform': 'web',
-      'X-GymProgres-App-Version': 'web-admin-promo-2',
+      'X-GymProgres-App-Version': 'web-admin-promo-3',
       ...(options.headers || {})
     };
     if (token) headers.Authorization = `Bearer ${token}`;
@@ -82,6 +82,9 @@
       let text = `Nie udało się wykonać operacji (HTTP ${response.status}).`;
       if (typeof detail === 'string') text = detail;
       else if (Array.isArray(detail) && detail.length) text = detail.map((item) => item.msg || String(item)).join(' ');
+      if (response.status === 404 && path.includes('/promotion')) {
+        text += ' Endpoint dostępu promocyjnego nie jest jeszcze dostępny na aktualnej wersji API.';
+      }
       throw new Error(text);
     }
     return data;
@@ -132,7 +135,7 @@
         headers: {
           'Content-Type': 'application/json',
           'X-GymProgres-Platform': 'web',
-          'X-GymProgres-App-Version': 'web-admin-promo-2'
+          'X-GymProgres-App-Version': 'web-admin-promo-3'
         },
         body: JSON.stringify({
           login: $('login').value.trim(),
@@ -224,7 +227,7 @@
     $('days').value = '30';
     $('indefinite').checked = false;
     $('daysWrap').classList.remove('hidden');
-    fillPlans(user.role);
+    fillPlans(user.plan_code || (user.role === 'trener' ? 'trainer_start' : 'personal'));
     message($('promotionMessage'), '');
     renderCurrentPromotion();
     setBusy(promotionCard, true);
@@ -240,16 +243,16 @@
     }
   }
 
-  function fillPlans(role) {
+  function fillPlans(preferredCode) {
     const select = $('plan');
     select.textContent = '';
-    const options = role === 'trener' ? plans.trainer : plans.personal;
-    options.forEach((item) => {
+    plans.forEach((item) => {
       const option = document.createElement('option');
       option.value = item.code;
       option.textContent = item.label;
       select.appendChild(option);
     });
+    if (plans.some((item) => item.code === preferredCode)) select.value = preferredCode;
   }
 
   function renderCurrentPromotion() {
@@ -318,11 +321,24 @@
         body: JSON.stringify({ plan_code: $('plan').value, days, reason })
       });
       const normalized = normalizePromotionResponse(result);
-      currentPromotion = normalized.promotion;
+
+      // Nie uznajemy zapisu za zakończony tylko na podstawie POST. Czytamy
+      // promocję ponownie z API, aby panel pokazał dokładnie stan zapisany w DB.
+      const verified = await request(`/admin/users/${encodeURIComponent(selectedUser.login)}/promotion`);
+      const verifiedNormalized = normalizePromotionResponse(verified);
+      currentPromotion = verifiedNormalized.promotion || normalized.promotion;
+      if (!currentPromotion) {
+        throw new Error('Serwer nie potwierdził zapisu dostępu promocyjnego.');
+      }
+      if (currentPromotion.plan_code !== $('plan').value) {
+        throw new Error('Serwer zwrócił inny plan niż wybrany. Odśwież panel i spróbuj ponownie.');
+      }
+
       renderCurrentPromotion();
-      const successText = normalized.storeSubscriptionPreserved
-        ? 'Promocja została zapisana. Aktywna subskrypcja App Store/Google Play pozostaje bez zmian; promocja przejmie dostęp po jej zakończeniu.'
-        : 'Dostęp promocyjny został nadany i jest aktywny.';
+      const preserved = normalized.storeSubscriptionPreserved || currentPromotion.store_subscription_preserved === true;
+      const successText = preserved
+        ? 'Promocja została zapisana i potwierdzona. Aktywna subskrypcja App Store/Google Play pozostaje bez zmian; promocja przejmie dostęp po jej zakończeniu.'
+        : 'Dostęp promocyjny został nadany, potwierdzony w bazie i jest aktywny.';
       message($('promotionMessage'), successText, 'success');
       await loadUsers($('search').value.trim());
     } catch (error) {
@@ -347,9 +363,13 @@
         method: 'DELETE',
         body: JSON.stringify({ reason })
       });
-      currentPromotion = null;
+      const verified = await request(`/admin/users/${encodeURIComponent(selectedUser.login)}/promotion`);
+      currentPromotion = normalizePromotionResponse(verified).promotion;
+      if (currentPromotion) {
+        throw new Error('Serwer nadal zgłasza aktywną promocję. Odśwież panel i spróbuj ponownie.');
+      }
       renderCurrentPromotion();
-      message($('promotionMessage'), 'Dostęp promocyjny został odebrany.', 'success');
+      message($('promotionMessage'), 'Dostęp promocyjny został odebrany i potwierdzony.', 'success');
       await loadUsers($('search').value.trim());
     } catch (error) {
       message($('promotionMessage'), error.message);
