@@ -41,21 +41,45 @@
     }).format(date);
   }
 
+  function normalizePromotionResponse(result) {
+    if (!result) return { promotion: null, storeSubscriptionPreserved: false };
+    if (result.promotion) {
+      return {
+        promotion: result.promotion,
+        storeSubscriptionPreserved: result.store_subscription_preserved === true
+      };
+    }
+    if (result.plan_code && result.active === true) {
+      return {
+        promotion: result,
+        storeSubscriptionPreserved: result.store_subscription_preserved === true
+      };
+    }
+    return { promotion: null, storeSubscriptionPreserved: false };
+  }
+
   async function request(path, options = {}) {
     const headers = {
       'Content-Type': 'application/json',
       'X-GymProgres-Platform': 'web',
-      'X-GymProgres-App-Version': 'web-admin-promo-1',
+      'X-GymProgres-App-Version': 'web-admin-promo-2',
       ...(options.headers || {})
     };
     if (token) headers.Authorization = `Bearer ${token}`;
-    const response = await fetch(`${API}${path}`, { ...options, headers });
+
+    let response;
+    try {
+      response = await fetch(`${API}${path}`, { ...options, headers });
+    } catch (_) {
+      throw new Error('Nie udało się połączyć z API GymProgres. Spróbuj ponownie za chwilę.');
+    }
+
     let data = null;
     try { data = await response.json(); } catch (_) { data = null; }
     if (!response.ok) {
       if (response.status === 401) clearSession(false);
       const detail = data && data.detail;
-      let text = 'Nie udało się wykonać operacji.';
+      let text = `Nie udało się wykonać operacji (HTTP ${response.status}).`;
       if (typeof detail === 'string') text = detail;
       else if (Array.isArray(detail) && detail.length) text = detail.map((item) => item.msg || String(item)).join(' ');
       throw new Error(text);
@@ -103,12 +127,12 @@
     message($('loginMessage'), '');
     setBusy(loginCard, true);
     try {
-      const data = await fetch(`${API}/auth/login`, {
+      const response = await fetch(`${API}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-GymProgres-Platform': 'web',
-          'X-GymProgres-App-Version': 'web-admin-promo-1'
+          'X-GymProgres-App-Version': 'web-admin-promo-2'
         },
         body: JSON.stringify({
           login: $('login').value.trim(),
@@ -116,8 +140,8 @@
           device_name: 'Web Admin — promocje'
         })
       });
-      const body = await data.json().catch(() => ({}));
-      if (!data.ok) throw new Error(typeof body.detail === 'string' ? body.detail : 'Nieprawidłowy login lub hasło.');
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(typeof body.detail === 'string' ? body.detail : 'Nieprawidłowy login lub hasło.');
       if (!body.user || body.user.role !== 'admin') throw new Error('To konto nie ma uprawnień administratora.');
       token = body.access_token || '';
       if (!token) throw new Error('Serwer nie zwrócił tokenu sesji.');
@@ -130,7 +154,7 @@
     } catch (error) {
       token = '';
       sessionStorage.removeItem(TOKEN_KEY);
-      message($('loginMessage'), error.message);
+      message($('loginMessage'), error.message || 'Nie udało się zalogować.');
     } finally {
       setBusy(loginCard, false);
     }
@@ -206,7 +230,7 @@
     setBusy(promotionCard, true);
     try {
       const result = await request(`/admin/users/${encodeURIComponent(user.login)}/promotion`);
-      currentPromotion = result && result.promotion ? result.promotion : null;
+      currentPromotion = normalizePromotionResponse(result).promotion;
       renderCurrentPromotion();
       promotionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
@@ -255,6 +279,12 @@
       reason.textContent = `Powód: ${currentPromotion.reason}`;
       wrap.appendChild(reason);
     }
+    if (currentPromotion.store_subscription_preserved === true || currentPromotion.effective_now === false) {
+      const queued = document.createElement('div');
+      queued.className = 'muted';
+      queued.textContent = 'Konto ma aktywną subskrypcję sklepową. Promocja jest zapisana i zacznie obowiązywać po jej zakończeniu, jeśli nadal będzie aktywna.';
+      wrap.appendChild(queued);
+    }
     box.appendChild(wrap);
     revoke.classList.remove('hidden');
     grant.textContent = 'Zmień promocję';
@@ -287,9 +317,13 @@
         method: 'POST',
         body: JSON.stringify({ plan_code: $('plan').value, days, reason })
       });
-      currentPromotion = result && result.promotion ? result.promotion : null;
+      const normalized = normalizePromotionResponse(result);
+      currentPromotion = normalized.promotion;
       renderCurrentPromotion();
-      message($('promotionMessage'), 'Dostęp promocyjny został zapisany.', 'success');
+      const successText = normalized.storeSubscriptionPreserved
+        ? 'Promocja została zapisana. Aktywna subskrypcja App Store/Google Play pozostaje bez zmian; promocja przejmie dostęp po jej zakończeniu.'
+        : 'Dostęp promocyjny został nadany i jest aktywny.';
+      message($('promotionMessage'), successText, 'success');
       await loadUsers($('search').value.trim());
     } catch (error) {
       message($('promotionMessage'), error.message);
