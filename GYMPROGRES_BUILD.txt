@@ -1,4 +1,4 @@
-GYMPROGRES WEB CURRENT SOURCE
-Commit: 1bb35fe410d404c5f00255f7859046b2663c19f3
-Built: 2026-08-12T20:02:42Z
-Scope: current Android/iOS feature set, Web login-only safeguards
+﻿GYMPROGRES WEB CURRENT SOURCE
+Commit: e7d9e590be2d4932fd94be5490d468949dd5f011
+Built local: 2026-08-16T19:37:14Z
+Scope: integrated Flutter Web, admin promotional access, Web login-only safeguards, Excel upload fix
