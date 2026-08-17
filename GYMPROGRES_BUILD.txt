@@ -1,4 +1,4 @@
 ﻿GYMPROGRES WEB CURRENT SOURCE
-Commit: 60dc55c7fe19b4484d970a5461c561ab7d408369
-Built local: 2026-08-17T19:42:59Z
+Commit: fc62257a28ee19a09006429358fd1d3595340f5a
+Built local: 2026-08-17T20:08:44Z
 Scope: integrated Flutter Web, admin promotional access, Web login-only safeguards, Excel upload fix
