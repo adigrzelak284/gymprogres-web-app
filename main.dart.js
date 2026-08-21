@@ -66493,7 +66493,7 @@ g=A.n(g,a0,a0,a0,a0,e==null?a0:e.ad0(25,B.bI,-0.6),a0,a0,a0)
 e=a2.gVa()
 f=f.Q
 f=f==null?a0:f.aQy(B.dB,B.e7)
-f=A.bk(A.a7(A.b([g,B.eW,A.n("GymProgres  ?  "+e,a0,a0,a0,a0,f,a0,a0,a0)],h),B.O,B.ec,B.j),1)
+f=A.bk(A.a7(A.b([g,B.eW,A.n("GymProgres  \u2022  "+e,a0,a0,a0,a0,f,a0,a0,a0)],h),B.O,B.ec,B.j),1)
 e=A.c_(14)
 g=A.uX(B.vq,1)
 e=A.cU(a0,a.a6A(),B.x,a0,new A.cg(B.Wu,a0,g,e,a0,a0,B.ad),a0,a0,a0,a0,a0,a0,a0,a0)

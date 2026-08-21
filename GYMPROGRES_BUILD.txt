@@ -1,5 +1,5 @@
 ﻿GymProgres Web
-Source commit: 19822f0c608cebe91642eca7c7ff7bbb6df030b8
+Source commit: 7ec0a6ba94a8d58cd2cf2fc8f907317bacd6c401
 Build: Flutter Web release
-Deployed: 2026-08-19 23:39:09
+Deployed: 2026-08-21 20:10:33
 Domain: app.gymprogres.pl
