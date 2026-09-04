@@ -1,4 +1,4 @@
 GYMPROGRES WEB CURRENT SOURCE
-Commit: 8536779d6426f7df96cc3564676efe1e612f0da9
-Built: 2026-09-04T11:29:58Z
-Scope: DEV 0.24.19+1102, desktop onboarding, meal-plan day delete and meal-plan library
+Commit: 106a76949a6acbdeee2a355ed30e346a6242dfc3
+Built: 2026-09-04T11:39:31Z
+Scope: DEV 0.24.19+1102, desktop onboarding, independent Web onboarding state, meal-plan day delete and meal-plan library
