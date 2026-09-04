@@ -1,5 +1,4 @@
-﻿GymProgres Web
-Source commit: 7ec0a6ba94a8d58cd2cf2fc8f907317bacd6c401
-Build: Flutter Web release
-Deployed: 2026-08-21 20:10:33
-Domain: app.gymprogres.pl
+GYMPROGRES WEB CURRENT SOURCE
+Commit: 8536779d6426f7df96cc3564676efe1e612f0da9
+Built: 2026-09-04T11:29:58Z
+Scope: DEV 0.24.19+1102, desktop onboarding, meal-plan day delete and meal-plan library
