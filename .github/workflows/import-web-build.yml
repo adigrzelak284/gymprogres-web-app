@@ -1,0 +1,74 @@
+name: Import verified GymProgres Web build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/import-web-build.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gymprogres-web-import
+  cancel-in-progress: false
+
+jobs:
+  import-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout production Web repo
+        uses: actions/checkout@v4
+
+      - name: Download verified Web artifact
+        env:
+          BUILD_URL: 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-5584-81f4-8dac-e8ddefba1f43/raw?se=2026-09-04T11%3A35%3A35Z&sp=r&sv=2026-02-06&sr=b&scid=2cb10e1d-a40e-5bc8-8591-91d7bead44e9&skoid=a3a8eefe-d4bd-4909-ab1d-2a75a2302fac&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-04T06%3A30%3A42Z&ske=2026-09-05T06%3A30%3A42Z&sks=b&skv=2026-02-06&sig=hi6RYsHhz1yt4euD0koQLtNEdVfctwXFQYLVQz%2BQIes%3D'
+        run: |
+          curl --fail --location --retry 3 "$BUILD_URL" -o /tmp/gymprogres-web-current.zip
+          echo 'b9ca6890041d035996bc1d2523904524885942c819d6e06009e7adbed0a613ed  /tmp/gymprogres-web-current.zip' | sha256sum -c -
+
+      - name: Replace production package
+        run: |
+          rm -rf /tmp/gymprogres-web-build
+          mkdir -p /tmp/gymprogres-web-build
+          unzip -q /tmp/gymprogres-web-current.zip -d /tmp/gymprogres-web-build
+          test -f /tmp/gymprogres-web-build/main.dart.js
+          test -f /tmp/gymprogres-web-build/GYMPROGRES_BUILD.txt
+          grep -F 'Commit: 8536779d6426f7df96cc3564676efe1e612f0da9' /tmp/gymprogres-web-build/GYMPROGRES_BUILD.txt
+          grep -F 'DEV 0.24.19+1102' /tmp/gymprogres-web-build/GYMPROGRES_BUILD.txt
+
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' -exec rm -rf -- {} +
+          cp -a /tmp/gymprogres-web-build/. .
+          rm -f .github/workflows/import-web-build.yml
+
+      - name: Commit production Web build
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No production changes to commit.'
+          else
+            git commit -m 'Deploy GymProgres Web 0.24.19+1102 (8536779d)'
+            git push origin HEAD:main
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload production Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy production Web to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
